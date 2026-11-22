@@ -1,7 +1,7 @@
 import requests
 import random
 import string
-from urls import CREATE_COURIER
+from urls import CREATE_COURIER, BASE_URL
 
 def register_new_courier_and_return_login_password():
    
@@ -56,3 +56,8 @@ def get_order_payload(color=None):
     "comment": "Позвонить за час",
     "color": color
 }
+
+def delete_courier(courier_id):
+    url = f"{BASE_URL}/api/v1/courier/{courier_id}"
+    response = requests.delete(url)
+    return response

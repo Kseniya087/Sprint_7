@@ -1,0 +1,5 @@
+"BROKEN","EPIC","FAILED","FEATURE","PASSED","SKIPPED","STORY","UNKNOWN"
+"0","Логин курьера","0","API /api/v1/courier/login","8","0","","0"
+"0","Список заказов","0","API /api/v1/orders","1","0","","0"
+"0","Создание заказа","0","API /api/v1/orders","5","0","","0"
+"0","Создание курьера","0","API /api/v1/courier","7","0","","0"

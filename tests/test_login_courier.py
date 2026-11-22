@@ -1,7 +1,6 @@
 import requests
 import pytest
 from urls import LOGIN_COURIER
-from helpers import create_random_courier
 import allure
 
 @allure.epic("Логин курьера")
@@ -9,25 +8,22 @@ import allure
 class TestLoginCourier:
 
     @allure.title("Успешная авторизация курьера")
-    def test_login_courier_success(self):
-        _,payload = create_random_courier()
-        login_data = {"login": payload["login"],
-        "password": payload["password"]}
+    def test_login_courier_success(self, courier_data):
+        login_data = {"login": courier_data["login"],
+        "password": courier_data["password"]}
         response = requests.post(LOGIN_COURIER, data = login_data)
         assert response.status_code == 200
 
     @allure.title("Успешная авторизация с передачей всех обязательных полей")
-    def test_login_courier_with_all_fields(self):
-        _,payload = create_random_courier()
-        login_data = {"login": payload["login"],
-                "password": payload["password"]}
+    def test_login_courier_with_all_fields(self, courier_data):
+        login_data = {"login": courier_data["login"],
+                "password": courier_data["password"]}
         response = requests.post(LOGIN_COURIER, data = login_data)
         assert response.status_code == 200
 
     @allure.title("Возврат ошибки при неверном логине или пароле")
-    def test_login_courier_wrong_credentials_error(self):
-        _,payload = create_random_courier()
-        login_data = {"login": payload["login"],
+    def test_login_courier_wrong_credentials_error(self, courier_data):
+        login_data = {"login": courier_data["login"],
                 "password": "wrong_password_123"}
         response = requests.post(LOGIN_COURIER, data = login_data)
         assert response.status_code == 404
@@ -47,9 +43,8 @@ class TestLoginCourier:
         assert response.status_code == 404
     
     @allure.title("успешный запрос возвращает 'id' курьера в теле ответа")
-    def test_login_courier_retuns_id(self):
-        _,payload = create_random_courier()
-        login_data = {"login": payload["login"],
-             "password": payload["password"]}
+    def test_login_courier_retuns_id(self, courier_data):
+        login_data = {"login": courier_data["login"],
+             "password": courier_data["password"]}
         response = requests.post(LOGIN_COURIER, data = login_data)
         assert "id" in response.json()
