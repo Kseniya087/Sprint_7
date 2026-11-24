@@ -1,17 +1,14 @@
-import requests
 import random
 import string
-from urls import CREATE_COURIER, BASE_URL
+from api_client import create_courier, login_courier, delete_courier
+
+def generate_random_string(length):
+    letters = string.ascii_lowercase
+    return ''.join(random.choice(letters) for i in range(length))
 
 def register_new_courier_and_return_login_password():
-   
-    def generate_random_string(length):
-        letters = string.ascii_lowercase
-        random_string = ''.join(random.choice(letters) for i in range(length))
-        return random_string
- 
     login_pass = []
-
+    
     login = generate_random_string(10)
     password = generate_random_string(10)
     first_name = generate_random_string(10)
@@ -22,7 +19,7 @@ def register_new_courier_and_return_login_password():
         "firstName": first_name
     }
 
-    response = requests.post('https://qa-scooter.praktikum-services.ru/api/v1/courier', data=payload)
+    response = create_courier(payload)
 
     if response.status_code == 201:
         login_pass.append(login)
@@ -32,32 +29,33 @@ def register_new_courier_and_return_login_password():
     return login_pass
 
 def create_random_courier():
-    login = "".join(random.choices(string.ascii_lowercase, k=10))
-    password = "".join(random.choices(string.ascii_lowercase, k=10))
-    first_name = "".join(random.choices(string.ascii_lowercase, k=10))
-    
+    login = generate_random_string(10)
+    password = generate_random_string(10)
+    first_name = generate_random_string(10)
+
     payload = {"login": login, "password": password, "firstName": first_name}
-    response = requests.post(CREATE_COURIER, data = payload)
-    
+    response = create_courier(payload)
+
     return response, payload
 
-def get_order_payload(color=None):
-    if color is None:
-        color = []
+def get_order_payload(color):
+    payload = {
+        "firstName": "Ксения",
+        "lastName": "Яковлева",
+        "address": "ул.Шилова,д.34",
+        "metroStation": 4,
+        "phone": "+7 969 087 35 35",
+        "rentTime": 5,
+        "deliveryDate": "2026-11-26",
+        "comment": "Позвонить за час",
+        "color": color
+    }
+    return payload
 
-        return {
-    "firstName": "Ксения",
-    "lastName": "Яковлева",
-    "address": "Москва, Шипиловская, д.34",
-    "metroStation": 4,
-    "phone": "+7 969 123 35 35",
-    "rentTime": 5,
-    "deliveryDate": "2026-11-26",
-    "comment": "Позвонить за час",
-    "color": color
-}
-
-def delete_courier(courier_id):
-    url = f"{BASE_URL}/api/v1/courier/{courier_id}"
-    response = requests.delete(url)
-    return response
+def delete_courier_by_login(login, password):
+    login_response = login_courier({"login": login, "password": password})
+    if login_response.status_code == 200:
+        courier_id = login_response.json().get("id")
+        if courier_id:
+            delete_courier(courier_id)
+                                            
