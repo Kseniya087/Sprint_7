@@ -34,13 +34,14 @@ class TestLoginCourier:
         assert "message" in response.json()
 
     @allure.title("Возврат ошибки при отсутствии обязательного поля")
-    @pytest.mark.parametrize("login_data", [{"login": TestData.SOME_LOGIN},
-                   {"password": TestData.SOME_PASSWORD},{}])
-    def test_login_courier_missing_field_error(self, login_data):
+    @pytest.mark.parametrize("login_data, expected_codes, expected_messages", [
+        ({"login": TestData.SOME_LOGIN}, [400, 504], ["Недостаточно данных для входа", "Service unavailable"]),
+        ({"password": TestData.SOME_PASSWORD}, [400, 504], ["Недостаточно данных для входа", "Service unavailable"]),
+        ({}, [400, 504], ["Недостаточно данных для входа", "Service unavailable"])])
+    def test_login_courier_missing_field_error(self, login_data, expected_codes, expected_messages):
         response = login_courier(login_data)
-        assert response.status_code in [400, 504]
-        if response.status_code == 400:
-            assert "message" in response.json()
+        assert response.status_code in expected_codes
+        assert any(msg in response.text for msg in expected_messages)
 
     @allure.title("Запрос возвращает ошибку при авторизации под несуществующим пользователем")
     def test_login_courier_non_existent_user_error(self):

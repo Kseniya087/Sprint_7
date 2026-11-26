@@ -12,3 +12,13 @@ def courier_data():
     yield payload
     
     delete_courier(courier_id)
+
+    
+@pytest.fixture
+def created_courier():
+    response, payload = create_random_courier()
+
+    login_response = login_courier({"login": payload["login"], "password": payload["password"]})
+    courier_id = login_response.json()["id"]
+    yield response, payload
+    delete_courier(courier_id)
